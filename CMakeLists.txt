@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 cmake_minimum_required (VERSION 2.4.7)
 project (libsiftfast)
+
 set( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE )
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Define here the needed parameters
 set (SIFTFAST_VERSION_MAJOR 1)
@@ -385,7 +386,7 @@ else()
 message(STATUS "MATLAB installation not found")
 endif(USE_MATLAB)
 
-include(${CMAKE_SOURCE_DIR}/FindOctave.cmake)
+find_package(Octave REQUIRED)
 if(OCTAVE_FOUND)
   if( MSVC )
     # need _mex since mkoctfile generates a siftfast.lib which messes with windows stuff
