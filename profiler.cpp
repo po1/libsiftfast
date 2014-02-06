@@ -235,7 +235,7 @@ void DVProfWrite(const char* pfilename, u32 frames)
             uTotal[1] += it->second.uInclusive;
         }
 
-        fprintf(f, "total times (%d): ex: %Lu ", frames, 1000000*uTotal[0]/(luPerfFreq*(u64)frames));
+        fprintf(f, "total times (%u): ex: %Lu ", frames, 1000000*uTotal[0]/(luPerfFreq*(u64)frames));
         fprintf(f, "inc: %Lu\n", 1000000 * uTotal[1]/(luPerfFreq*(u64)frames));
 
         if( uTotal[0] > 0 )
