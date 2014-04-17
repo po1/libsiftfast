@@ -1,1 +1,0 @@
-/home/student/branches_svn/scm/bin/utils/developer_utils/g++  -fPIC  -fopenmp -O3 -DNDEBUG   -shared -Wl,-soname,libsiftfast.so -o devel/lib/libsiftfast.so CMakeFiles/siftfast.dir/src/libsiftfast.cpp.o 

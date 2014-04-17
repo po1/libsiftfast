@@ -1,8 +1,0 @@
-prefix=/home/student/ros/catkin_ws/src/libsiftfast/build/devel
-
-Name: libsiftfast
-Description: Description of libsiftfast
-Version: 1.0.0
-Cflags: -I/home/student/ros/catkin_ws/src/libsiftfast/include
-Libs: -L/home/student/ros/catkin_ws/src/libsiftfast/build/devel/lib -lsiftfast
-Requires: 

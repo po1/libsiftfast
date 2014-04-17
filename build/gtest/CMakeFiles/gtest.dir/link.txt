@@ -1,1 +1,0 @@
-/home/student/branches_svn/scm/bin/utils/developer_utils/g++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libgtest.so -o libgtest.so CMakeFiles/gtest.dir/src/gtest-all.cc.o -L/home/student/ros/catkin_ws/src/libsiftfast/build/gtest/src -lpthread -Wl,-rpath,/home/student/ros/catkin_ws/src/libsiftfast/build/gtest/src 
