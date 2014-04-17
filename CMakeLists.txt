@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8.3)
 project (libsiftfast)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 find_package(catkin REQUIRED)
 find_package(OpenMP)
 
@@ -18,7 +20,7 @@ if(OPENMP_FOUND)
 endif()
 
 # SSE
-include(UseSSE.cmake)
+include(cmake/UseSSE.cmake)
 
 add_library(siftfast SHARED src/libsiftfast.cpp)
 
