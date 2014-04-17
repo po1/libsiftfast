@@ -1,0 +1,8 @@
+/home/student/ros/catkin_ws/src/libsiftfast/build/CMakeFiles/_catkin_empty_exported_target.dir
+/home/student/ros/catkin_ws/src/libsiftfast/build/CMakeFiles/clean_test_results.dir
+/home/student/ros/catkin_ws/src/libsiftfast/build/CMakeFiles/doxygen.dir
+/home/student/ros/catkin_ws/src/libsiftfast/build/gtest/CMakeFiles/gtest.dir
+/home/student/ros/catkin_ws/src/libsiftfast/build/gtest/CMakeFiles/gtest_main.dir
+/home/student/ros/catkin_ws/src/libsiftfast/build/CMakeFiles/run_tests.dir
+/home/student/ros/catkin_ws/src/libsiftfast/build/CMakeFiles/siftfast.dir
+/home/student/ros/catkin_ws/src/libsiftfast/build/CMakeFiles/tests.dir

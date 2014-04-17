@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/student/ros/catkin_ws/src/libsiftfast/build/devel/setup.sh

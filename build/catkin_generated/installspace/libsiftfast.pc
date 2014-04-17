@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: libsiftfast
+Description: Description of libsiftfast
+Version: 1.0.0
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lsiftfast
+Requires: 
