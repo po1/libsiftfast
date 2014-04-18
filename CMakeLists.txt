@@ -7,11 +7,9 @@ find_package(catkin REQUIRED)
 find_package(OpenMP)
 
 catkin_package(
-  INCLUDE_DIRS include
   LIBRARIES siftfast
+  CFG_EXTRAS libsiftfast-extras.cmake
 )
-
-include_directories(include)
 
 # OpenMP
 if(OPENMP_FOUND)
@@ -22,6 +20,17 @@ endif()
 # SSE
 include(cmake/UseSSE.cmake)
 
+# Generate header with version number
+set(PKG_DEVEL_INCLUDE ${CATKIN_DEVEL_PREFIX}/include/siftfast)
+configure_file(siftfast.h.in ${PKG_DEVEL_INCLUDE}/siftfast.h)
+
+include_directories(${CATKIN_DEVEL_PREFIX}/include)
+
 add_library(siftfast SHARED src/libsiftfast.cpp)
 
+# Install rules
+
 install(TARGETS siftfast DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+
+install(FILES ${PKG_DEVEL_INCLUDE}/siftfast.h
+  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/siftfast)
