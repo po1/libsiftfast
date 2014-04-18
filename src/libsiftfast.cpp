@@ -65,19 +65,19 @@ using namespace std;
 #define SQRT2 1.4142136f
 
 #if defined(_MSC_VER)
-// Calculates log2 of number.  
-double log2( double n )  
-{  
-    // log(n)/log(2) is log2.  
-    return log( n ) / log( 2.0 );  
+// Calculates log2 of number.
+double log2( double n )
+{
+    // log(n)/log(2) is log2.
+    return log( n ) / log( 2.0 );
 }
 #endif
 
 // if defined, will profile the critical functions and write results to prof.txt
-//#define DVPROFILE 
+//#define DVPROFILE
 
 // if defined will align all image rows to 16 bytes
-// usually aligning is faster (can save ~100ms), however for 1024x768 
+// usually aligning is faster (can save ~100ms), however for 1024x768
 // cache misses with the enlarged rows make it ~400-500ms slower
 //#define ALIGNED_IMAGE_ROWS
 
@@ -224,7 +224,7 @@ Image CreateImage(int rows, int cols)
     im->rows = rows;
     im->cols = cols;
 
-    // cannot make 16 byte aligned since 1024x768 images 
+    // cannot make 16 byte aligned since 1024x768 images
 #if defined(ALIGNED_IMAGE_ROWS) && defined(__SSE__)
     im->stride = (cols+3)&~3;
 #else
@@ -266,7 +266,7 @@ Image CreateImageFromMatlabData(double* pdata, int rows, int cols)
             __m128d m2 = _mm_loadu_pd(pf+2*rows);
             __m128d m3 = _mm_loadu_pd(pf+3*rows);
 #endif
-            
+
             __m128 mrows0 = _mm_shuffle_ps(_mm_cvtpd_ps(m0),_mm_cvtpd_ps(m1),0x44);
             __m128 mrows1 = _mm_shuffle_ps(_mm_cvtpd_ps(m2),_mm_cvtpd_ps(m3),0x44);
 
@@ -321,11 +321,11 @@ Keypoint GetKeypointsInternal(Image porgimage)
         }
         else
             pimage = SiftCopyImage(porgimage);
-    
+
         float fnewscale = 1.0f;
         if( !s_params.DoubleImSize )
             fnewscale = 0.5f;
-    
+
         if( s_params.InitSigma > fnewscale ) {
             GaussianBlur(pimage, pimage, sqrtf(s_params.InitSigma*s_params.InitSigma - fnewscale*fnewscale));
 //            {
@@ -369,7 +369,7 @@ Keypoint GetKeypointsInternal(Image porgimage)
 #ifdef DVPROFILE
     DVProfWrite("prof.txt");
 #endif
-    
+
     return keypts;
 }
 
@@ -415,7 +415,7 @@ void GetKeypointDescriptors(Image porgimage, Keypoint frames)
         ++itkeys;
         pimage = SiftCopyImage(porgimage);
     }
-    
+
     float fnewscale = 1.0f;
     if( vscalekeypoints[0].size() == 0 )
         fnewscale = 0.5f;
@@ -462,7 +462,7 @@ Image SiftDoubleSize(Image im)
             pdst[newstride+2*j+1] = 0.25f*(psrc[j] + psrc[j+1] + psrc[stride+j] + psrc[stride+j+1]);
         }
     }
-    
+
     return newim;
 }
 
@@ -509,7 +509,7 @@ Keypoint OctaveKeypoints(Image pimage, Image* phalfimage, float fscale, Keypoint
 
         s_imgaus[i]->rows = rows; s_imgaus[i]->cols = cols; s_imgaus[i]->stride = stride;
         GaussianBlur(s_imgaus[i], s_imgaus[i-1], fincsigma * sigma);
-        
+
         s_imdiff[i-1]->rows = rows; s_imdiff[i-1]->cols = cols; s_imdiff[i-1]->stride = stride;
         SubtractImage(s_imdiff[i-1],s_imgaus[i-1],s_imgaus[i]);
 
@@ -518,7 +518,7 @@ Keypoint OctaveKeypoints(Image pimage, Image* phalfimage, float fscale, Keypoint
 
     s_imgrad->rows = rows; s_imgrad->cols = cols; s_imgrad->stride = stride;
     s_imorient->rows = rows; s_imorient->cols = cols; s_imorient->stride = stride;
-    
+
     *phalfimage = s_imgaus[s_params.Scales];
     return FindMaxMin(s_imdiff, s_imgaus, fscale, prevkeypts);
 }
@@ -542,7 +542,7 @@ void OctaveKeypointDescriptors(Image pimage, Image* phalfimage, float fscale, li
 
     s_imgrad->rows = rows; s_imgrad->cols = cols; s_imgrad->stride = stride;
     s_imorient->rows = rows; s_imorient->cols = cols; s_imorient->stride = stride;
-    
+
     *phalfimage = s_imgaus[s_params.Scales];
     float fiscale = 1.0f/fscale;
 
@@ -579,7 +579,7 @@ void SubtractImage(Image imgdst, Image img0, Image img1)
         float* pixels0 = _pixels0+j*stride;
         float* pixels1 = _pixels1+j*stride;
         float* pdst = _pdst + j*stride;
-                    
+
         for(int k = 0; k < (cols&~7); k += 8) {
             _MM_STORE_ALIGNED(pdst+k,_mm_sub_ps(_MM_LOAD_ALIGNED(pixels0+k), _MM_LOAD_ALIGNED(pixels1+k)));
             _MM_STORE_ALIGNED(pdst+k+4,_mm_sub_ps(_MM_LOAD_ALIGNED(pixels0+k+4), _MM_LOAD_ALIGNED(pixels1+k+4)));
@@ -604,12 +604,12 @@ void GaussianBlur(Image imgdst, Image image, float fblur)
     DVSTARTPROFILE();
 
     const float GaussTruncate = 4.0f;
-    
+
     int ksize = (int)(2.0f * GaussTruncate * fblur + 1.0f);
     if( ksize < 3 )
         ksize = 3;
-    ksize += !(ksize&1); // make it odd    
-        
+    ksize += !(ksize&1); // make it odd
+
     float* kernel = NULL;
     for( map<float, float* >::iterator it = s_mapkernel.begin(); it != s_mapkernel.end(); ++it) {
         if( fabsf(fblur-it->first) < 0.001f ) {
@@ -623,14 +623,14 @@ void GaussianBlur(Image imgdst, Image image, float fblur)
 
         // +4 for alignment and padding issues with sse
         kernel = (float*)sift_aligned_malloc((ksize+9)*sizeof(float),16)+1;
-        
+
         int width = (ksize >= 0 ? ksize : ksize-1)>>1;
         for(int i = 0; i <= ksize; ++i) {
             float fweight = expf( - (float)(i-width)*(i-width) / (2.0f*fblur*fblur) );
             faccum += (double)fweight;
             kernel[i] = fweight;
         }
-        
+
         for(int i = 0; i < ksize; ++i) // shouldn't it be <=?
             kernel[i] /= (float)faccum;
         memset(kernel+ksize,0,sizeof(float)*8);
@@ -734,9 +734,9 @@ void ConvHorizontalFast(Image imgdst, Image image, float* kernel, int ksize)
 #ifdef ALIGNED_IMAGE_ROWS
     assert( !(image->stride&3) );
 #endif
-    
+
     DVSTARTPROFILE();
-    
+
     int width = (ksize >= 0 ? ksize : ksize-1)>>1;
     float* _pixels = image->pixels, *_pdst = imgdst->pixels;
 
@@ -746,7 +746,7 @@ void ConvHorizontalFast(Image imgdst, Image image, float* kernel, int ksize)
         for(LISTBUF::iterator it = s_listconvbuf.begin(); it != s_listconvbuf.end(); ++it)
             sift_aligned_free(*it);
         s_listconvbuf.clear();
-        
+
         // create at least one
         s_listconvbuf.push_back((float*)sift_aligned_malloc(convsize,16));
         s_convbufsize = convsize;
@@ -770,10 +770,10 @@ void ConvHorizontalFast(Image imgdst, Image image, float* kernel, int ksize)
 
     #pragma omp parallel for schedule(dynamic,16)
     for(int i = 0; i < rows; i++) {
-    
+
 #ifdef _OPENMP
         float* pconvbuf;
-        
+
         // need to get a free buffer
         #pragma omp critical
         {
@@ -790,10 +790,10 @@ void ConvHorizontalFast(Image imgdst, Image image, float* kernel, int ksize)
 #endif
         // get 16 byte aligned array
         myaccum ac;
-        
+
         float* pixels = _pixels+i*stride;
         float* pdst = _pdst + i*stride;
-        
+
         float* buf = pconvbuf+1;
         float f0 = pixels[0], f0e = pixels[cols-1];
         for(int j = 0; j < width; ++j)
@@ -801,15 +801,15 @@ void ConvHorizontalFast(Image imgdst, Image image, float* kernel, int ksize)
         memcpy(buf+width,pixels,cols*sizeof(float));
         for(int j = 0; j < width; ++j)
             buf[cols+width+j] = f0e;
-        
+
         __m128 mkerbase = _mm_and_ps(_mm_loadu_ps(kernel), _mm_load_ps((float*)s_convmask));
-        
+
         for(int j = 0; j < 2*(cols>>2); ++j) {
             int off = 2*j-(j&1);
             buf = pconvbuf+1+off;
             __m128 maccum0 = _mm_mul_ps(_mm_loadu_ps(buf), mkerbase);
             __m128 maccum1 = _mm_mul_ps(_mm_loadu_ps(buf+2), mkerbase);
-            
+
             __m128 mbufprev = _mm_loadu_ps(buf+3);
             for(int k = 3; k < ksize; k += 8) {
                 __m128 mbuf0 = mbufprev;
@@ -852,7 +852,7 @@ void ConvHorizontalFast(Image imgdst, Image image, float* kernel, int ksize)
         for(int j=(cols&~3); j < cols; ++j) {
             buf = pconvbuf+j+1;
             __m128 maccum0 = _mm_mul_ps(_mm_loadu_ps(buf), mkerbase);
-                
+
             for(int k = 3; k < ksize; k += 4) {
                 __m128 mbuf0 = _mm_loadu_ps(buf+k);
                 __m128 mker0 = _mm_load_ps(kernel+k);
@@ -881,7 +881,7 @@ void ConvHorizontalFast(Image imgdst, Image image, float* kernel, int ksize)
 void ConvVerticalFast(Image image, float* kernel, int ksize)
 {
     int rows = image->rows, stride = image->stride;
-    
+
     assert( ksize >= 3); // 3 is cutting it close
 #ifdef ALIGNED_IMAGE_ROWS
     assert( !(image->stride&3) );
@@ -894,9 +894,9 @@ void ConvVerticalFast(Image image, float* kernel, int ksize)
     if( s_listconvbuf.size() == 0 || s_convbufsize < convsize ) {
         for(LISTBUF::iterator it = s_listconvbuf.begin(); it != s_listconvbuf.end(); ++it)
             sift_aligned_free(*it);
-        
+
         s_listconvbuf.clear();
-        
+
         // create at least one
         s_listconvbuf.push_back((float*)sift_aligned_malloc(convsize,16));
         s_convbufsize = convsize;
@@ -915,12 +915,12 @@ void ConvVerticalFast(Image image, float* kernel, int ksize)
 
     #pragma omp parallel for
     for(int j = 0; j < stride; j += 4) {
-        
+
         float* pixels = _pixels+j;
 #ifndef ALIGNED_IMAGE_ROWS
         myaccum ac;
 #endif
-        
+
 #ifdef _OPENMP
         float* pconvbuf;
 
@@ -936,9 +936,9 @@ void ConvVerticalFast(Image image, float* kernel, int ksize)
             }
         }
 #endif
-        
+
         __m128 mpprev = _MM_LOAD_ALIGNED(pixels);
-        
+
         __m128 mprev = mpprev;
         __m128 mker0 = _mm_load1_ps(kernel);
         __m128 mker1 = _mm_load1_ps(kernel+1);
@@ -963,7 +963,7 @@ void ConvVerticalFast(Image image, float* kernel, int ksize)
             mprev = mnew;
             buf += 8;
         }
-        
+
         _mm_store_ps(buf,mpprev); buf += 8;
         for(int i = max(1,rows-width+2); i < rows; ++i) {
             __m128 mnew = _mm_loadu_ps(pixels+i*stride);
@@ -1042,8 +1042,8 @@ Keypoint FindMaxMin(Image* imdiff, Image* imgaus, float fscale, Keypoint keypts)
         GradOriImages(imgaus[index],s_imgrad,s_imorient);
 #endif
         assert( imdiff[index]->stride == stride );
-        float* _diffpixels = imdiff[index]->pixels;        
-        
+        float* _diffpixels = imdiff[index]->pixels;
+
 //        for(int i = 0; i < rows; ++i) {
 //            for(int j = 0; j < cols; ++j) {
 //                if( isnan(imgaus[index]->pixels[i*cols+j]) ) {
@@ -1065,7 +1065,7 @@ Keypoint FindMaxMin(Image* imdiff, Image* imgaus, float fscale, Keypoint keypts)
             Keypoint newkeypts = NULL;
             float* diffpixels = _diffpixels + rowstart*stride;
             for( int colstart = 5; colstart < cols-5; ++colstart ) {
-                   
+
                 float fval = diffpixels[colstart];
                 if( fabsf(fval) > s_params.PeakThresh*0.8f ) {
                     if( LocalMaxMin(fval, imdiff[index],rowstart,colstart) &&
@@ -1082,7 +1082,7 @@ Keypoint FindMaxMin(Image* imdiff, Image* imgaus, float fscale, Keypoint keypts)
                 Keypoint lastkeypt = newkeypts;
                 while(lastkeypt->next)
                     lastkeypt = lastkeypt->next;;
-            
+
                 #pragma omp critical
                 {
                     lastkeypt->next = keypts;
@@ -1098,7 +1098,7 @@ Keypoint FindMaxMin(Image* imdiff, Image* imgaus, float fscale, Keypoint keypts)
 void GradOriImages(Image image, Image imgrad, Image imorient)
 {
     DVSTARTPROFILE();
-    
+
     int rows = image->rows, cols = image->cols, stride = image->stride;
     float* _pixels = image->pixels, *_pfgrad = imgrad->pixels, *_pforient = imorient->pixels;
     float fdiffc, fdiffr;
@@ -1134,18 +1134,18 @@ void GradOriImages(Image image, Image imgrad, Image imorient)
 void GradOriImagesFast(Image image, Image imgrad, Image imorient)
 {
     DVSTARTPROFILE();
-    
+
     int rows = image->rows, cols = image->cols, stride = image->stride;
     float* _pixels = image->pixels, *_pfgrad = imgrad->pixels, *_pforient = imorient->pixels;
     int endcol = ((cols-1)&~3);
-    
+
     {
         // first row is special 2*(_pixels[0]-_pixels[stride])
         float fdiffc, fdiffr;
 
         // first and last elt is 2*([1]-[0]), have to improvise for sse
         __m128 mprevj = _mm_set_ps(_pixels[2],_pixels[1],_pixels[0],2.0f*_pixels[0]-_pixels[1]);
-        
+
         for(int j = 0; j < endcol; j += 4) {
             float* pf = _pixels+j;
             __m128 mnewj = _mm_loadu_ps(pf+3);
@@ -1153,16 +1153,16 @@ void GradOriImagesFast(Image image, Image imgrad, Image imorient)
             __m128 mgradc = _mm_sub_ps(_mm_shuffle_ps(mprevj,mnewj,0x4e),mprevj);
             mgradr = _mm_sub_ps(mgradr, _MM_LOAD_ALIGNED(pf+stride));
             mgradr = _mm_add_ps(mgradr,mgradr);
-            
+
             __m128 mrad = _mm_sqrt_ps(_mm_add_ps(_mm_mul_ps(mgradr,mgradr),_mm_mul_ps(mgradc,mgradc)));
             __m128 morient = atan2f4(mgradr,mgradc);
-            
+
             _MM_STORE_ALIGNED(_pfgrad+j,mrad);
             mprevj = mnewj;
             _MM_STORE_ALIGNED(_pforient+j,morient);
         }
 
-        
+
         // compute the rest the old way
         for(int j = endcol; j < cols; ++j) {
             if( j == 0 )
@@ -1196,10 +1196,10 @@ void GradOriImagesFast(Image image, Image imgrad, Image imorient)
             __m128 mgradr = _MM_LOAD_ALIGNED(pf-stride);
             __m128 mgradc = _mm_sub_ps(_mm_shuffle_ps(mprevj,mnewj,0x4e),mprevj);
             mgradr = _mm_sub_ps(mgradr,_MM_LOAD_ALIGNED(pf+stride));
-            
+
             __m128 mrad = _mm_sqrt_ps(_mm_add_ps(_mm_mul_ps(mgradr,mgradr),_mm_mul_ps(mgradc,mgradc)));
             __m128 morient = atan2f4(mgradr,mgradc);
-            
+
             _MM_STORE_ALIGNED(pfgrad+j,mrad);
             mprevj = mnewj;
             _MM_STORE_ALIGNED(pforient+j,morient);
@@ -1237,10 +1237,10 @@ void GradOriImagesFast(Image image, Image imgrad, Image imorient)
             __m128 mgradc = _mm_sub_ps(_mm_shuffle_ps(mprevj,mnewj,0x4e),mprevj);
             mgradr = _mm_sub_ps(mgradr,_MM_LOAD_ALIGNED(pf));
             mgradr = _mm_add_ps(mgradr,mgradr);
-            
+
             __m128 mrad = _mm_sqrt_ps(_mm_add_ps(_mm_mul_ps(mgradr,mgradr),_mm_mul_ps(mgradc,mgradc)));
             __m128 morient = atan2f4(mgradr,mgradc);
-            
+
             _MM_STORE_ALIGNED(pfgrad+j,mrad);
             mprevj = mnewj;
             _MM_STORE_ALIGNED(pforient+j,morient);
@@ -1323,7 +1323,7 @@ Keypoint InterpKeyPoint(Image* imdiff, int index, int rowstart, int colstart,
         return InterpKeyPoint(imdiff,index,newrow,newcol,imgrad,imorient,pMaxMinArray,fscale,keypts,steps-1);
 
     if(fabsf(X[0]) <= 1.5f && fabsf(X[1]) <= 1.5f && fabsf(X[2]) <= 1.5f && fabsf(fquadvalue) >= s_params.PeakThresh ) {
-        
+
         char* pmaxmin = pMaxMinArray + rowstart*imgrad->cols+colstart;
         bool bgetkeypts = false;
         #pragma omp critical
@@ -1333,7 +1333,7 @@ Keypoint InterpKeyPoint(Image* imdiff, int index, int rowstart, int colstart,
                 pmaxmin[0] = 1;
             }
         }
-        
+
         if( bgetkeypts ) {
             float fSize = s_params.InitSigma * powf(2.0f,((float)index + X[0])/(float)s_params.Scales);
             return AssignOriHist(imgrad,imorient,fscale,fSize,index,(float)rowstart+X[1],(float)colstart+X[2],keypts);
@@ -1403,7 +1403,7 @@ void SolveLinearSystem(float* Y, float* H, int dim)
             Y[j] -= Y[i]*f;
         }
     }
-    
+
     // extract solution
     for(int i = dim-1; i >= 0; --i) {
         for(int j = dim-1; j > i; --j)
@@ -1434,7 +1434,7 @@ Keypoint AssignOriHist(Image imgrad, Image imorient, float fscale, float fSize,i
             continue;
 
         for( int colcur = colstart-windowsize; colcur <= colstart+windowsize; ++colcur ) {
-            
+
             if( colcur < 0 || colcur >= cols-2 )
                 continue;
 
@@ -1442,22 +1442,22 @@ Keypoint AssignOriHist(Image imgrad, Image imorient, float fscale, float fSize,i
             if( fdx > 0 ) {
                 float fdrow = (float)rowcur-frowstart, fdcol = (float)colcur-fcolstart;
                 float fradius2 = fdrow*fdrow+fdcol*fdcol;
-            
+
                 if( (float)(windowsize*windowsize) + 0.5f > fradius2 ) {
                     float fweight = expf(fradius2*fexpmult);
                     int binindex = (int)(pforient[rowcur*stride+colcur]*fbinmult+fbinadd);
-                    
+
                     // there is a bug in pforient where it could be 2*PI sometimes
                     if( binindex > 36 ) {
                         //if( binindex != 54 )
                             fprintf(stderr,"bin %d\n",binindex);
                         binindex = 0;
                     }
-                        
+
                     assert( binindex >= 0 && binindex <= 36 );
                     if( binindex == 36 )
                         binindex = 35;
-                
+
                     hists[binindex] += fdx*fweight;
                 }
             }
@@ -1467,7 +1467,7 @@ Keypoint AssignOriHist(Image imgrad, Image imorient, float fscale, float fSize,i
     // pick an orientation with the highest votes
     for(int i = 0; i < 6; ++i)
         SmoothHistogram(hists,36);
-    
+
 #ifdef __SSE__
     float SIFT_ALIGNED16(fmaxval);
     __m128 m0 = _mm_load_ps(&hists[0]);
@@ -1494,19 +1494,19 @@ Keypoint AssignOriHist(Image imgrad, Image imorient, float fscale, float fSize,i
             fmaxval = hists[i];
     }
 #endif
-    
+
     fmaxval *= 0.8f;
     const float foriadd = 0.5f*2*PI/36.0f - PI, forimult = 2*PI/36.0f;
-    
+
     int previndex = 35;
     for(int index = 0; index < 36; ++index) {
         if( index != 0 )
             previndex = index-1;
-    
+
         int nextindex = 0;
         if( index != 35 )
             nextindex = index+1;
-    
+
         if( hists[index] <= hists[previndex] || hists[index] <= hists[nextindex] || hists[index] < fmaxval )
             continue;
 
@@ -1517,7 +1517,7 @@ Keypoint AssignOriHist(Image imgrad, Image imorient, float fscale, float fSize,i
         keypts = MakeKeypoint(imgrad,imorient,fscale,fSize,frowstart,fcolstart,forient,keypts);
         keypts->imageindex = imageindex;
     }
-    
+
     return keypts;
 }
 
@@ -1568,7 +1568,7 @@ Keypoint MakeKeypoint(Image imgrad, Image imorient, float fscale, float fSize,
     pnewkeypt->fpyramidscale = fscale;
     if( g_nComputeDescriptors )
         MakeKeypointSample(pnewkeypt,imgrad,imorient,fSize,frowstart,fcolstart);
-    
+
     return pnewkeypt;
 }
 
@@ -1591,7 +1591,7 @@ void MakeKeypointSample(Keypoint pkeypt, Image imgrad, Image imorient,
         maccum1 = _mm_add_ps(maccum1,_mm_mul_ps(m1,m1));
     }
 
-    maccum0 = _mm_add_ps(maccum0,maccum1);    
+    maccum0 = _mm_add_ps(maccum0,maccum1);
 #ifdef __SSE3__
     maccum0 = _mm_hadd_ps(maccum0,maccum0);
     maccum0 = _mm_hadd_ps(maccum0,maccum0);
@@ -1599,7 +1599,7 @@ void MakeKeypointSample(Keypoint pkeypt, Image imgrad, Image imorient,
     maccum0 = _mm_add_ps(maccum0,_mm_shuffle_ps(maccum0,maccum0,0x4e));
     maccum0 = _mm_add_ss(maccum0,_mm_shuffle_ps(maccum0,maccum0,0x55));
 #endif
-    
+
     float fthresh;
     float SIFT_ALIGNED16(flength2);
     _mm_store_ss(&flength2, maccum0);
@@ -1630,7 +1630,7 @@ void MakeKeypointSample(Keypoint pkeypt, Image imgrad, Image imorient,
 //    float flength = 512.0f/sqrtf(flength2);
 //    maccum0 = _mm_load1_ps(&flength);
 //    unsigned char* pkeydesc = pkeypt->descrip;
-//    
+//
 //    for(int i = 0; i < 128; i += 16 ) {
 //        __m128 m0 = _mm_load_ps(fdesc+i);
 //        __m128 m1 = _mm_load_ps(fdesc+i+4);
@@ -1644,7 +1644,7 @@ void MakeKeypointSample(Keypoint pkeypt, Image imgrad, Image imorient,
 //    }
 #else
     NormalizeVec(fdesc,128);
-    
+
     bool brenormalize = false;
     for(int i = 0; i < 128; ++i) {
         if( fdesc[i] > 0.2f ) {
@@ -1652,7 +1652,7 @@ void MakeKeypointSample(Keypoint pkeypt, Image imgrad, Image imorient,
             brenormalize = true;
         }
     }
-    
+
     if( brenormalize )
         NormalizeVec(fdesc,128);
 #endif
@@ -1680,7 +1680,7 @@ void KeySample(float* fdesc, Keypoint pkeypt, Image imgrad, Image imorient,
     float frealsize = 3.0f*fSize;
     float firealsize = 1.0f/(3.0f*fSize);
     int windowsize = (int)(frealsize*SQRT2*5.0f*0.5f+0.5f);
-    
+
     float fsr = sinang*firealsize, fcr = cosang*firealsize, fdrr = -fdrow*firealsize, fdcr = -fdcol*firealsize;
 
     for(int row = -windowsize; row <= windowsize; ++row) {
@@ -1690,7 +1690,7 @@ void KeySample(float* fdesc, Keypoint pkeypt, Image imgrad, Image imorient,
 //#else
         float* fnewdesc = fdesc;
 //#endif
-        
+
         float frow = (float)row;
         float fcol = -(float)windowsize;
         for(int col = -windowsize; col <= windowsize; ++col, fcol += 1) {
@@ -1698,7 +1698,7 @@ void KeySample(float* fdesc, Keypoint pkeypt, Image imgrad, Image imorient,
             float cpos = fcr*fcol - fsr*frow + fdcr;
             float rx = rpos + (2.0f - 0.5f);
             float cx = cpos + (2.0f - 0.5f);
-            
+
             if( rx > -0.9999f && rx < 3.9999f && cx > -0.9999f && cx < 3.9999f ) {
                 AddSample(fnewdesc, pkeypt, imgrad, imorient, rowstart+row, colstart+col, rpos, cpos, rx, cx);
 //#ifdef _OPENMP
@@ -1734,7 +1734,7 @@ void AddSample(float* fdesc, Keypoint pkeypt, Image imgrad, Image imorient, int 
     int rows = imgrad->rows, cols = imgrad->cols, stride = imgrad->stride;
     if( r < 0 || r >= rows || c < 0 || c >= cols )
         return;
-    
+
     float fgrad = imgrad->pixels[r*stride+c] * expf(-0.125f*(rpos*rpos+cpos*cpos));
     float forient = imorient->pixels[r*stride+c] - pkeypt->ori;
     while( forient > 2*PI )
@@ -1774,17 +1774,17 @@ void PlaceInIndex(float* fdesc, float mag, float ori, float rx, float cx)
     ofrac = oribin-(float)neworient;
 
     assert( newrow >= -1 && newrow < 4 && neworient >= 0 && neworient <= 8 && rfrac >= 0 && rfrac < 1);
-    
+
     for(int i = 0; i < 2; ++i) {
         if( (unsigned int)(i+newrow) >= 4 )
             continue;
-        
+
         float frowgrad;
         if( i == 0 )
             frowgrad = mag*(1-rfrac);
         else
             frowgrad = mag*rfrac;
-        
+
         for(int j = 0; j < 2; ++j) {
             if( (unsigned int)(j+newcol) >= 4 )
                 continue;
@@ -1794,7 +1794,7 @@ void PlaceInIndex(float* fdesc, float mag, float ori, float rx, float cx)
                 fcolgrad = frowgrad*(1-cfrac);
             else
                 fcolgrad = frowgrad*cfrac;
-            
+
             float* pfdescorient = fdesc + 8*(4*(i+newrow)+j+newcol);
             for(int k = 0; k < 2; ++k) {
                 float forigrad;
@@ -1840,12 +1840,12 @@ void DestroyAllResources()
 #define DEI_CONST(a,b) static  const vec_int4   a = {b,b,b,b};
 
 
-DEF_CONST(CF4_2414213562373095, 2.414213562373095f) 
-DEF_CONST(CF4_04142135623730950, 0.4142135623730950f) 
-DEF_CONST(CF4_805374449538e_2,      8.05374449538e-2f) 
-DEF_CONST(CF4_138776856032E_1,      1.38776856032E-1f) 
-DEF_CONST(CF4_199777106478E_1,      1.99777106478E-1f) 
-DEF_CONST(CF4_333329491539E_1,      3.33329491539E-1f) 
+DEF_CONST(CF4_2414213562373095, 2.414213562373095f)
+DEF_CONST(CF4_04142135623730950, 0.4142135623730950f)
+DEF_CONST(CF4_805374449538e_2,      8.05374449538e-2f)
+DEF_CONST(CF4_138776856032E_1,      1.38776856032E-1f)
+DEF_CONST(CF4_199777106478E_1,      1.99777106478E-1f)
+DEF_CONST(CF4_333329491539E_1,      3.33329491539E-1f)
 
 #define VEC_F2I(a,b)   asm("cvttps2dq %1, %0":"=x" (a) :"x" (b))
 #define VEC_I2F(a,b)   asm("cvtdq2ps  %1, %0":"=x" (a) :"x" (b))
@@ -1879,14 +1879,14 @@ vec_float4 C-style expressions
 #define vec_nmsub(a,b,c)      ((c)-(a)*(b))
 #define vec_splat(x,n)        (typeof(x))_mm_shuffle_ps(x,x,_MM_SHUFFLE(n,n,n,n))
 
-DEF_CONST(CF4_0,        0.0f) 
-DEF_CONST(CF4_2,        2.0f) 
+DEF_CONST(CF4_0,        0.0f)
+DEF_CONST(CF4_2,        2.0f)
 DEI_CONST(CI4_SIGN,     0x80000000u)
-DEF_CONST(CF4__1,       -1.0f) 
-DEF_CONST(CF4_1,        1.0f) 
-DEF_CONST(CF4_SMALL,    1.0E-35f) 
-DEF_CONST(CF4_PIO2F,    1.570796326794896619f) 
-DEF_CONST(CF4_PIO4F,    0.7853981633974483096f) 
+DEF_CONST(CF4__1,       -1.0f)
+DEF_CONST(CF4_1,        1.0f)
+DEF_CONST(CF4_SMALL,    1.0E-35f)
+DEF_CONST(CF4_PIO2F,    1.570796326794896619f)
+DEF_CONST(CF4_PIO4F,    0.7853981633974483096f)
 DEF_CONST(CF4_PIF,      3.14159265358979323846f)
 
 inline vec_int4  __attribute__((__always_inline__))
@@ -1903,11 +1903,11 @@ inline vec_float4 __attribute__((__always_inline__))
       /* make argument positive and save the sign */
       vec_int4 sign = _signf4( x );
       VEC_XOR(x, sign);
-      
+
       /* range reduction */
       a1 = (vec_int4)VEC_GT (x , CF4_2414213562373095 );
       a2 = (vec_int4)VEC_GT (x , CF4_04142135623730950 );
-      a3 = ~a2; 
+      a3 = ~a2;
       a2 ^= a1;
 
       z1 = CF4__1 / (x+CF4_SMALL);
@@ -1917,7 +1917,7 @@ inline vec_float4 __attribute__((__always_inline__))
       VEC_AND(x, a3);
       VEC_OR(x, z1);
       VEC_OR(x, z2);
-      
+
       y = CF4_PIO2F;
       z1 = CF4_PIO4F;
       VEC_AND(y, a1);
