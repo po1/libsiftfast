@@ -1,8 +1,8 @@
 libsiftfast: author zerofrog(@gmail.com)
-Ported to catkin by Paul Mathieu (paul.mathieu@pal-robotics.com)
 ----------------------------------------
+Ported to catkin by Paul Mathieu (paul.mathieu@pal-robotics.com)
 
-This package contains `libsoftfast.so`, a really fast SIFT implementation using
+This package contains `libsiftfast.so`, a really fast SIFT implementation using
 SSE and OpenMP (also fixes some bugs from lowe's code, so outputs are similar,
 but not exact). The usage is very similar to David Lowe's sift program.
 
